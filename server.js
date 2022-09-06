@@ -3,16 +3,51 @@ import http from 'node:http';
 import express from 'express';
 import cookieParser from 'cookie-parser';
 
+const app = express();
+app.use(express.json())
+app.use(cookieParser());
+
+app.get('/', (request, response) => {
+    console.log("hello!");
+    console.log("cookies: ", request.cookies);
+    response.end("hello");
+})
+
+app.get('/authors', (request, response) => {
+    response.end("My name is Trey and my friend is Justin");
+})
+
+app.get('/galvanize', (request, response) => {
+    let HOST = "localhost";
+    let PORT = "3000"; 
+    response.end(`${HOST}:${PORT}`);
+})
+
+app.get('/login', (request, response) => {
+    console.log("hello!");
+    console.log("cookies: ", request.cookies);
+    response.cookie('name', 'Trey');
+    response.end("Logged in!");
+})
+
+app.get('/hello', (request, response) => {
+    if (request.cookies.name === 'trey') {
+        response.end(`Welcome ${request.cookies.name}!`);
+    } else {
+        response.end("Name cookie has not been set. Sorry!");
+    }
+    
+})
+
+
+
+app.listen(3000);
 
 const server = http.createServer((request, response) => {
     let url = request.url.split('/');
     let HOST = "localhost";
     let PORT = "3000"; 
-    if (url[1] === '') {
-        if (request.method === 'GET') {
-            response.end("Hello World");
-        }
-    } else if (url[1] === 'authors') {
+    if (url[1] === 'authors') {
         if (request.method === 'GET') {
             response.end("My name is Trey and my partner is Justin");
         }
@@ -36,8 +71,4 @@ const server = http.createServer((request, response) => {
     }
     response.statusCode = 404;
     response.end();
-  });
-
-  server.listen(3000, "localhost", () => {
-    console.log(`Server running at http://localhost:3000/`);
   });
